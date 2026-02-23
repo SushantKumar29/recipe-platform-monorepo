@@ -1,0 +1,21 @@
+{
+	"name": "recipe-platform-monorepo",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"build": "npm install --prefix recipe-platform-backend && npm install --prefix recipe-platform-frontend && npm run build --prefix recipe-platform-frontend",
+		"start": "npm run start --prefix recipe-platform-backend"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/SushantKumar29/recipe-platform-monorepo.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/SushantKumar29/recipe-platform-monorepo/issues"
+	},
+	"homepage": "https://github.com/SushantKumar29/recipe-platform-monorepo#readme"
+}
