@@ -1,0 +1,88 @@
+name: Monorepo CI
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main, development]
+
+jobs:
+  lint-test-build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: recipe_platform_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      PORT: 3000
+      NODE_ENV: test
+      PG_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/recipe_platform_test
+      ACCESS_TOKEN: test-jwt-secret-key-for-testing-only
+      UPSTASH_REDIS_REST_URL: test-cloud
+      UPSTASH_REDIS_REST_TOKEN: test-key
+      CLOUDINARY_CLOUD_NAME: test-secret
+      CLOUDINARY_API_KEY: http://localhost:8080
+      CLOUDINARY_API_SECRET: test-token
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install backend dependencies
+        run: npm install --prefix recipe-platform-backend
+
+      - name: Generate Prisma Client
+        working-directory: recipe-platform-backend
+        run: npx prisma generate --schema=prisma/schema.prisma
+
+      - name: Run Prisma Migrations
+        working-directory: recipe-platform-backend
+        run: npx prisma migrate deploy --schema=prisma/schema.prisma
+
+      # - name: Generate Prisma Client
+      # run: npx prisma generate --schema=recipe-platform-backend/prisma/schema.prisma
+      # run: cd recipe-platform-backend && npx prisma generate
+
+      # - name: Run Prisma Migrations
+      # run: npx prisma migrate deploy --schema=recipe-platform-backend/prisma/schema.prisma
+      # run: cd recipe-platform-backend && npx prisma migrate deploy
+
+      - name: Install frontend dependencies
+        run: npm install --prefix recipe-platform-frontend
+
+      - name: Run Lint Backend
+        run: npm run lint --prefix recipe-platform-backend
+
+      - name: Run Lint Frontend
+        run: npm run lint --prefix recipe-platform-frontend
+
+      - name: Run Backend Tests
+        run: npm run test --prefix recipe-platform-backend
+
+      - name: Run Frontend Tests
+        run: npm run test --prefix recipe-platform-frontend
+
+      - name: Build Frontend
+        run: npm run build --prefix recipe-platform-frontend

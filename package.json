@@ -4,6 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"lint": "npm run lint --prefix recipe-platform-backend && npm run lint --prefix recipe-platform-frontend",
+		"test": "npm run test --prefix recipe-platform-backend && npm run test --prefix recipe-platform-frontend",
 		"build": "npm install --prefix recipe-platform-backend && npm install --prefix recipe-platform-frontend && npm run build --prefix recipe-platform-frontend",
 		"start": "npm run start --prefix recipe-platform-backend"
 	},
