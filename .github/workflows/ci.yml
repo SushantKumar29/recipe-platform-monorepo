@@ -81,7 +81,7 @@ jobs:
       - name: Run Backend Tests
         run: npm run test --prefix recipe-platform-backend
         env:
-          TS_NODE_PROJECT: recipe-platform-backend/tsconfig.jest.json
+          TS_NODE_PROJECT: tsconfig.jest.json
 
       - name: Run Frontend Tests
         run: npm run test --prefix recipe-platform-frontend
